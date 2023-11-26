@@ -11,7 +11,7 @@ export class StackNavigation extends Component {
     return (
       <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen name="HomeScreen" component={Homescreen} />
+            <Stack.Screen name="No Internet" component={Homescreen}/>
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="Login" component={Login} />
           </Stack.Navigator>
