@@ -35,6 +35,7 @@ export const Login = ({navigation}) => {
   const [paymentMode, setPaymentMode] = useState('');
   const [hsnCode, setHsnCode] = useState('');
   const [address, setAddress] = useState('');
+  const[paidAmount,setPaidAmount]=useState('')
 
   const containerStyle = {
     backgroundColor: 'white',
@@ -48,7 +49,7 @@ export const Login = ({navigation}) => {
     Price: '',
     Quantity: '',
   };
-  var arrData: {id: number; Name: string; Price: string; Quantity: string}[] =
+  var arrData: {id: number; Name: string; Price: string; Quantity: string,hsnCode:string}[] =
     [];
   const numberofitemInput = (number: number) => {
     for (let i = 1; i <= number; i++) {
@@ -58,6 +59,7 @@ export const Login = ({navigation}) => {
         Name: '',
         Price: '',
         Quantity: '',
+        hsnCode:''
       });
     }
     if (arrData.length > 0) {
@@ -68,7 +70,7 @@ export const Login = ({navigation}) => {
   };
   const validationOfForm = () => {
     var errorData = data.filter((item, index) => {
-      if (item.Name == '' || item.Price == '' || item.Quantity == '') {
+      if (item.Name == '' || item.Price == '' || item.Quantity == ''||item.hsnCode=='') {
         item.error = `Item Information of item ${index + 1}  Is Empty`;
         return item;
       }
@@ -119,8 +121,20 @@ export const Login = ({navigation}) => {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1, paddingHorizontal: 8, height: '100%',paddingBottom:20}}>
-      <ScrollView style={{flex: 1, paddingHorizontal: 8, height: '100%',paddingBottom:20}}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        paddingHorizontal: 8,
+        height: '100%',
+        paddingBottom: 20,
+      }}>
+      <ScrollView
+        style={{
+          flex: 1,
+          paddingHorizontal: 8,
+          height: '100%',
+          paddingBottom: 20,
+        }}>
         <TextInput
           label="Full Name"
           value={name}
@@ -130,13 +144,14 @@ export const Login = ({navigation}) => {
         <TextInput
           label="Mobile"
           value={mobile}
+          keyboardType='numeric'
           onChangeText={text => setMobile(text)}
           style={styles.commonTextInputSyle}
         />
         <TextInput
           label="Address"
           value={address}
-          onChangeText={text => setMobile(text)}
+          onChangeText={text => setAddress(text)}
           style={styles.commonTextInputSyle}
         />
         <TextInput
@@ -164,7 +179,7 @@ export const Login = ({navigation}) => {
               numberofitemInput(item);
             }}
             style={styles.touchableStyle}>
-            <Text>Add Items</Text>
+            <Text style={{color:"#fff"}}>Add Items</Text>
           </TouchableOpacity>
         </View>
 
@@ -216,6 +231,7 @@ export const Login = ({navigation}) => {
             {label: '18%', value: '18%'},
             {label: '15%', value: '15%'},
             {label: '28%', value: '28%'},
+            {label: '12%', value: '12%'},
           ]}
           onValueChange={value => setGst(value)}
           value={gst}
@@ -253,34 +269,67 @@ export const Login = ({navigation}) => {
             {label: 'Cash', value: 'Cash'},
             {label: 'online', value: 'online'},
           ]}
-          onValueChange={value => setGst(value)}
-          value={gst}
+          onValueChange={value => setPaymentMode(value)}
+          value={paymentMode}
         />
 
         <TextInput
           label="Amount Paid"
-          value={email}
-          onChangeText={text => setemail(text)}
+          value={paidAmount}
+          keyboardType='numeric'
+          onChangeText={text => setPaidAmount(text)}
           style={styles.commonTextInputSyle}
         />
-        <TextInput
-          label="Amount Received"
-          value={email}
-          onChangeText={text => setemail(text)}
-          style={styles.commonTextInputSyle}
-        />
+      
 
         <TouchableOpacity
           onPress={async () => {
             try {
-              await AsyncStorage.setItem("user", JSON.stringify(data));
+              await AsyncStorage.setItem('user', JSON.stringify(data));
             } catch (error) {
               console.log(error);
             }
-            navigation.navigate('PDF', {itemValue: data});
+            // const [email, setemail] = useState('');
+            // const [name, setName] = useState('');
+            // const [mobile, setMobile] = useState('');
+            // const [item, setItem] = useState('');
+            // const [visible, setVisible] = useState(false);
+            // const [gst, setGst] = useState('');
+            // const [fadeAnim] = useState(new Animated.Value(0));
+            // const [data, setData] = useState([]);
+            // const [paymentMode, setPaymentMode] = useState('');
+            // const [hsnCode, setHsnCode] = useState('');
+            // const [address, setAddress] = useState('');
+            if (!name || !email ||! mobile || !gst || !paymentMode || !address) {
+              Alert.alert("Please Enter Details")
+              return false;
+            } 
+            else if(!data){
+              Alert.alert("Please Enter item Details")
+              return false;
+            }
+            else {
+              navigation.navigate('PDF', {
+                itemValue: data,
+                saleDetails: {
+                  name: name,
+                  email: email,
+                  mobile: mobile,
+                  gst: gst,
+                  paymentMode: paymentMode,
+                  address: address,
+                },
+              });
+            }
+            
           }}
-          style={{...styles.touchableStyle,backgroundColor:"#2596be",padding:12,marginTop:12}}>
-          <Text style={{textAlign: 'center', color: '#fff'}}>Generate Pdf</Text>
+          style={{
+            ...styles.touchableStyle,
+            // backgroundColor: '#2596be',
+            padding: 12,
+            marginTop: 12,
+          }}>
+          <Text style={{textAlign: 'center', color: '#fff'}}>Generate Bill</Text>
         </TouchableOpacity>
         <View style={{backgroundColor: '#ADD8E6'}}></View>
         {/* //  <Animated.View // Special animatable View
@@ -308,7 +357,7 @@ export const Login = ({navigation}) => {
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
-                    padding: 8,
+                    paddingVertical: 8,
                   }}>
                   <TextInput
                     label="Item Name"
@@ -319,27 +368,40 @@ export const Login = ({navigation}) => {
                     }}
                     style={{
                       ...styles.commonTextInputSyle,
-                      width: '40%',
+                      width: '26%',
                       paddingHorizontal: 4,
                     }}
                   />
                   <TextInput
                     label="Price"
                     value={arrData[index]?.Price}
+                    keyboardType='numeric'
                     onChangeText={text => {
                       item.Price = text;
                       console.log(item);
                     }}
                     style={{...styles.commonTextInputSyle, width: '20%'}}
                   />
-                  <TextInput
-                    label="Quantity"
+                   <TextInput
+                    label="Hsn-code"
+                    value={arrData[index]?.hsnCode}
+                    keyboardType='numeric'
+                    onChangeText={text => {
+                      item.hsnCode = text;
+                      console.log(item);
+                    }}
+                    style={{...styles.commonTextInputSyle, width: '26%'}}
+                  />
+                  
+                   <TextInput
+                    label="Qty"
                     value={arrData[index]?.Quantity}
+                    keyboardType='numeric'
                     onChangeText={text => {
                       item.Quantity = text;
                       console.log(item);
                     }}
-                    style={{...styles.commonTextInputSyle, width: '28%'}}
+                    style={{...styles.commonTextInputSyle, width: '16%'}}
                   />
                 </View>
               </>
@@ -359,5 +421,5 @@ export const Login = ({navigation}) => {
 };
 const styles = StyleSheet.create({
   commonTextInputSyle: {marginVertical: 8, backgroundColor: '#fff'},
-  touchableStyle: {backgroundColor:"#2596be", padding: 8, borderRadius: 8},
+  touchableStyle: {backgroundColor: '#dd2049', padding: 8, borderRadius: 8},
 });

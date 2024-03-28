@@ -7,25 +7,29 @@ interface Props {}
 export const StaticLogin = (props: Props) => {
   const [userid,setUserId]=useState('')
   const [password,setPassword]=useState('')
-  const handleLogin =async ()=>{
-    try {
+  const handleLogin =async ()=>{ 
       try {
-        await AsyncStorage.setItem("Email-id", userid);
-        await AsyncStorage.setItem("Password", password);
+      if(userid.toLowerCase()=="kartikey@gmail.com"&&password=="12345678"){
+        await AsyncStorage.setItem("email-id", userid);
+        await AsyncStorage.setItem("password", password);
+        props.navigation.replace("No Internet")
+      }
+      else {
+        alert("Enter User Id & Password")
+      }
       } catch (error) {
         console.log(error);
       }
-      const savedUser = await AsyncStorage.getItem("user");
-      const currentUser = JSON.parse(savedUser);
-      console.log(currentUser);
+      // const savedUser = await AsyncStorage.getItem("user");
+      // const currentUser = JSON.parse(savedUser);
+      // console.log(currentUser);
       
-    } catch (error) {
-      console.log(error);
-    }
-  }
+    } 
 
   return (
-    <SafeAreaView style={{alignItems:"center",justifyContent:"center",flex:1}}>
+    <SafeAreaView style={{alignItems:"center",flex:1,backgroundColor:"#fff"}}>
+      <Image source={require('../../assets/logoInvoice.jpg')} style={{alignItems:"flex-end",backgroundColor:"red",marginTop:30}} ></Image>
+      <View style={{alignItems:"center",height:220,width:"90%",justifyContent:"flex-start",marginTop:22,flex:1}}>
       <Card elevation={1} style={{ backgroundColor:"#fff",height:220,width:"90%",justifyContent:"center",padding:12}}>
       <TextInput
             label="User-Id"
@@ -45,6 +49,7 @@ export const StaticLogin = (props: Props) => {
 
           <Button style={{backgroundColor:"#df5b3e",marginTop:12}}onPress={()=> handleLogin()} textColor="#fff">Login</Button>
       </Card>
+      </View>
 
         {/* <ImageBackground source={require("../../assets/logoInvoice.jpg")}> */}
       

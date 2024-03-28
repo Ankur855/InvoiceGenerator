@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -34,14 +34,25 @@ type SectionProps = PropsWithChildren<{
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
+ const [expiry,setExpiry]=useState(false)
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
+ useEffect(()=>{
+  const expiryDate = new Date('2024-04-04'); // Example expiry date 1 week from now
+  const currentDate = new Date();
+console.log( currentDate ,expiryDate," currentDate ",currentDate > expiryDate)
+  if (currentDate > expiryDate) {
+    // Alert.alert("jjj")
+    setExpiry(true)
+  }
+ },[])
   return (
-   <>
+   <>{
+    expiry?<View><Text>Your App Is Expired</Text></View>:
     <StackNavigation/>
+   }
+
     </>
   );
 }

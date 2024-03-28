@@ -1,4 +1,4 @@
-import { Button, StatusBar, Text, View } from 'react-native'
+import { Alert, Button, StatusBar, Text, View } from 'react-native'
 import React, { Component, useEffect, useState } from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from "@react-navigation/native";
@@ -12,24 +12,34 @@ import { StaticLogin } from '../src/screens/StaticLogin';
 import Feather from 'react-native-vector-icons/Feather';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Expiry from '../src/screens/components/Expiry';
 const Stack = createStackNavigator();
 
 const StackNavigation =({})=> {
   const [password,setPassword]=useState('')
   const [email,setEmail]=useState('')
+  const [initaialRoutes,setInitialRoutes]=useState('')
+  const [expired,setExpired]=useState(false)
     useEffect(()=>{
       getData()
     },[])
     const getData=async ()=>{
       const email = await AsyncStorage.getItem("email-id");
       const password = await AsyncStorage.getItem("password");
-      setPassword(password)
-      setEmail(email)
+    
+     if(email&&password){
+        setInitialRoutes("No Internet")
+      }
+      else{
+        setInitialRoutes("LoginPage")
+      }
+      console.log(password,email,"emaill")
     }
     return (
       <NavigationContainer>
         <StatusBar/>
-          <Stack.Navigator initialRouteName= {password&&email?'No Internet':'LoginPage'} >
+        <Stack.Navigator initialRouteName= {initaialRoutes} >
+          {/* <Stack.Navigator initialRouteName= {password&&email?'No Internet':'LoginPage'} > */}
             <Stack.Screen name="No Internet" component={Register} 
             
                options={{
@@ -41,7 +51,7 @@ const StackNavigation =({})=> {
                 // headerTitleAlign:"center",
                 headerTitle:"SK EnterPrises",
                 headerStyle: {
-                  backgroundColor: '#2596be',
+                  backgroundColor: '#3a746b',
                   height:80
                   // alignSelf:"center"
                   
@@ -49,7 +59,7 @@ const StackNavigation =({})=> {
                 headerRight:()=>(
                  <View>
                   <Text style={{color:"#fff",padding:12}}>
-                    {moment(new Date()).format("MM/DD/YYYY")}
+                    {moment(new Date()).format("DD/MM/YYYY")}
                   </Text>
                  </View>
                 ),
@@ -58,21 +68,56 @@ const StackNavigation =({})=> {
                   fontWeight: 'bold',
                 },
                 // headerTitle: (props) => <LogoTitle {...props} />,
-                headerLeft: () => (
-                  <Feather
-                    onPress={() => alert('This is a button!')}
-                    name={'arrow-left'}
-                    size={25}
-                    color="black"
-                  />
-                ),
+                // headerLeft: () => (
+                //   <Feather
+                //     onPress={() => alert('This is a button!')}
+                //     name={'arrow-left'}
+                //     size={25}
+                //     color="black"
+                //   />
+                // ),
               }}
             
             />
             <Stack.Screen name="Register" component={HomeScreen} />
-            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Login" component={Login}  options={{
+                // headerShown:false,
+                // headerStyle: {
+                //   backgroundColor: '#4c00b0',
+                //   height: 120,
+                // }
+                // headerTitleAlign:"center",
+                headerTitle:"Generate Bill",
+                headerStyle: {
+                  backgroundColor: '#3a746b',
+                  height:80
+                  // alignSelf:"center"
+                  
+                },
+                headerRight:()=>(
+                 <View>
+                  <Text style={{color:"#fff",padding:12}}>
+                    {moment(new Date()).format("DD/MM/YYYY")}
+                  </Text>
+                 </View>
+                ),
+                headerTintColor: 'white',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+                // headerTitle: (props) => <LogoTitle {...props} />,
+                // headerLeft: () => (
+                //   <Feather
+                //     onPress={() => alert('This is a button!')}
+                //     name={'arrow-left'}
+                //     size={25}
+                //     color="black"
+                //   />
+                // ),
+              }}/>
             <Stack.Screen name="PDF" component={Pdf1} />
-            <Stack.Screen name="LoginPage" component={StaticLogin} />
+            <Stack.Screen name="LoginPage" component={StaticLogin} options={{headerShown:false}} />
+            <Stack.Screen name="Expiry" component={Expiry} />
           </Stack.Navigator>
           </NavigationContainer>
         );

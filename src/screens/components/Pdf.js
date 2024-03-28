@@ -8,7 +8,7 @@ import {
   Platform,
   PermissionsAndroid,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {decode} from 'base-64';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
@@ -21,32 +21,35 @@ import Share from 'react-native-share';
 import moment from 'moment';
 import FileViewer from 'react-native-file-viewer';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 var ImagePath =
-  'D:ReactNativeProjectloginnScreenreactnativeloginPortalassetslogoInvoice.png';
+  require("../../../assets/logoInvoice.jpg");
+var imagePath = 'https://ibb.co/3CVTYcR';
 var filePath1;
+var taxable;
+var totalgstamount;
+var invoiceNumber;
+var invoiceTime;
 const Pdf1 = ({navigation, route}) => {
   const [filePath, setFilePath] = useState('');
   const [totalTaxAmount, setTotalTaxAmount] = useState('');
-  const [invoiceNumber, setInvoiceNumber] = useState('');
-  const [invoiceTime, setInvoiceTime] = useState('');
-  const [totalPricegst,setTotalPricegst]=useState('')
+  // const [invoiceNumber, setInvoiceNumber] = useState('');
+  // const [invoiceTime, setInvoiceTime] = useState('');
+  const [totalPricegst, setTotalPricegst] = useState('');
   useEffect(() => {
-    console.log(route.params);
+    console.log(route.params, 'kjkhj');
     calculateValue();
-    var val = Math.floor(100 + Math.random() * 900);
-    var invoiceNumber = '00' + val + '/' + moment(new Date()).format('YYYY');
-    var invoiceTime = moment(new Date()).format('HH:MM');
-    console.log(invoiceNumber, invoiceTime);
-    setInvoiceNumber(invoiceNumber);
-    setInvoiceTime(invoiceTime);
-    HtmlFormat();
-    
+
+    // HtmlFormat();
 
     // console.log(HtmlFormat())
     // setTimeout(() => {
     //   createPDF()
     // }, 2000);
   }, [navigation]);
+  useEffect(() => {
+    HtmlFormat_();
+  }, [invoiceNumber, totalPricegst, totalTaxAmount]);
   // const getimageurl =async ()=>{
   //   try {
   //     const response = await fetch(ImagePath);
@@ -61,213 +64,248 @@ const Pdf1 = ({navigation, route}) => {
   //     console.error('Error fetching image:', error);
   //   }
   // }
-  const calculateValue = () => {
+  const calculateValue = async () => {
     let caldata = route.params.itemValue;
     var Totalprice = 0;
     caldata.map((item, index) => {
       console.log(Number(item.Quantity) * Number(item.Price));
       Totalprice = Number(item.Quantity) * Number(item.Price) + Totalprice;
     });
-    var totalPricegst = (18 / 100) * Totalprice ;
-    var totalPricetax= totalPricegst+Totalprice
-    setTotalTaxAmount(totalPricetax);
-    setTotalPricegst(totalPricegst);
+    var totalPricegst =
+      (route.params.saleDetails.gst.slice(0, -1) / 100) * Totalprice;
+    var totalPricetax = totalPricegst + Totalprice;
+    var val = Math.floor(100 + Math.random() * 900);
+    invoiceNumber = '00' + val + '/' + moment(new Date()).format('YYYY');
+    invoiceTime = moment(new Date()).format('HH:MM');
+    console.log(invoiceNumber, invoiceTime);
+    // setInvoiceNumber(invoiceNumber);
+    // setInvoiceTime(invoiceTime);
+    taxable = totalPricetax.toFixed(2);
+    totalgstamount = totalPricegst.toFixed(2);
+    setTotalTaxAmount(totalPricetax.toFixed(2));
+    setTotalPricegst(totalPricegst.toFixed(2));
+// var fetchData= await AsyncStorage.getItem('amountData'); 
+// console.log(fetchData,"jsgfjsgf")
+//     var amountValue = {
+//       invoicenumber: invoiceNumber,
+//       invoiceTime: invoiceTime,
+//       totalamount: totalgstamount,
+//     };
+// var finalsetItem=[];
+// await finalsetItem.push(amountValue)
+//     await AsyncStorage.setItem('amountData',finalsetItem);
     console.log(Totalprice, 'totalll', totalPricetax);
   };
-  const HtmlFormat = async () => {
+  const HtmlFormat_ = async () => {
     var HtmlFormat = `
-        <html>
-          <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-          </head>
-          <body >
-            <div style="min-height: auto;
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+      </head>
+      <body >
+        <div style="min-height: auto;
+        width: 100%;
+        height : 98vh;
+        border: solid 2px #000;"  >
+        <div style="height: auto;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        background-color:#3a746b;
+        /* padding: 20px; */
+        justify-content: space-between;
+        align-items: center;">
+       
+        <div class="data-title">
+            <div style="display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            font-size: 2.6rem; color:#fff; 
+            padding-left: 20px;">SK Enterprises<br></div>
+        <div style="
+         display: flex;
+        flex-direction: column;
+        align-items: flex-start; 
+        padding-left: 20px; color:#fff
+        ">Flat No-307,Shheed Madan Lal Dhingra Marg <br/> ModelTown Sonipat Sub Post Office Sonipat -131101.</div>
+        </div>
+        <div style="padding-right:8px;color:#fff" >
+         GSTIN:06HUZPK8444J1ZL
+       <br/>
+        </div>
+        </div>
+        <hr />
+            <hr/>
+            <div style="
             width: 100%;
-            height : 100vh;
-            border: solid 2px #000;"  >
+            height: 78px;
+            padding: 15px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            ">
+                <div style="
+                width: 50%;
+                align-items: flex-start;
+                ">
+                    <p class="invoice-user">
+                        Billed To : ${route.params.saleDetails.name} <br/>
+                        <!--    Name : ${
+                          route.params.saleDetails.name
+                        } <br/> --!>
+                         Address : ${route.params.saleDetails.address} <br/>
+                        Phone No : +91 ${route.params.saleDetails.mobile}
+                    </p>
+                </div>
+                <div style="align-items: flex-end;">
+                    <p>Invoice No : ${invoiceNumber}<br/>
+                    Date : ${'34/09/2024'}<br/>
+                    Time :${invoiceTime}</p>
+                    <br/>
+                    <br/>
+                   
+                </div>
+            </div>
+            <hr/>
+            <hr/>
             <div style="height: auto;
             width: 100%;
             display: flex;
-            flex-direction: row;
-            /* padding: 20px; */
-            justify-content: space-between;
-            align-items: center;">
-           
-            <div class="data-title">
-                <div style="display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                font-size: 2.6rem;  
-                padding-left: 20px;">SK Enterprises<br></div>
-            <div style="
-             display: flex;
             flex-direction: column;
-            align-items: flex-start; 
-            padding-left: 20px;
-            ">Flat No-307,shhed Madan Lal Dhingra Marg <br/> ModelTown Sonipat Sub Post Office Sonipat -131101.</div>
-            </div>
-            <div style="padding-right:8px" >
-            ${route}<br/>${route}
-            </div>
-            </div>
-            <hr />
-                <hr/>
-                <div style="
-                width: 100%;
-                height: 78px;
-                padding: 15px;
-                display: flex;
-                flex-direction: row;
-                justify-content: space-evenly;
-                ">
-                    <div style="
-                    width: 50%;
-                    align-items: flex-start;
-                    ">
-                        <p class="invoice-user">
-                            Bill To : <br/>
-                            Name : ${'Ankur'} <br/>
-                            // Address : ${'Address'} <br/>
-                            Phone No : +91 ${'Mobile_No'}
-                        </p>
-                    </div>
-                    <div style="align-items: flex-end;">
-                        <p>Invoice No : ${invoiceNumber}<br/>
-                        Date : ${'34/09/2024'}<br/>
-                        Time :${invoiceTime}</p>
-                        <br/>
-                        <br/>
-                       
-                    </div>
-                </div>
-                <hr/>
-                <hr/>
-                <div style="height: auto;
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;">
-                    <table style="width:100%; border-collapse: collapse;">
-                        <tr style="background-color: rgba(255, 0, 62, 0.8); color: white;">
-                          <th style="height: 30px;">Index</th>
-                          <th style="height: 30px;">Product Name</th>
-                          <th style="height: 30px;">Price(Per)</th>
-                          <th style="height: 30px;">Quantity</th>
-                          <th style="height: 30px;">Total</th>
-                        </tr>
-                       ${route.params.itemValue.map((item, index) => {
-                         return `  <tr style="background-color: rgba(246, 221, 178, 0.8);">
-                            <td style="text-align: center;height: 30px;">${
-                              index + 1
-                            }</td>
-                            <td style="text-align: center;height: 30px;">${
-                              item.Name
-                            }</td>
-                            <td style="text-align: center;height: 30px;">${
-                              item.Price
-                            }</td>
-                            <td style="text-align: center;height: 30px;">${
-                              item.Quantity
-                            }</td>
-                            <td style="text-align: center;height: 30px;">₹ ${
-                              item.Price * item.Quantity
-                            }</td>
-                          </tr>`;
-                       })}
-                       
-                      </table>
-                      
-                        <!-- <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">Received balance :  1</div>
+            align-items: center;">
+                <table style="width:100%; border-collapse: collapse">
+                    <tr style="background-color: rgba(255, 0, 62, 0.8); color: white;">
+                      <th style="height: 30px;">Index</th>
+                      <th style="height: 30px;">Product Name</th>
+                      <th style="height: 30px;">Hsn code</th>
+                      <th style="height: 30px;">Price(Per)</th>
+                      <th style="height: 30px;">Quantity</th>
+                      <th style="height: 30px;">Total</th>
+                    </tr>
+                   ${route.params.itemValue.map((item, index) => {
+                     return `  <tr style="background-color: rgba(246, 221, 178, 0.8)">
+                        <td style="text-align: center;height: 30px;">${
+                          index + 1
+                        }</td>
+                        <td style="text-align: center;height: 30px;">${
+                          item.Name
+                        }</td>
+                        <td style="text-align: center;height: 30px;">${
+                          item.hsnCode
+                        }</td>
+                        <td style="text-align: center;height: 30px;">${
+                          item.Price
+                        }</td>
+                        <td style="text-align: center;height: 30px;">${
+                          item.Quantity
+                        }</td>
+                        <td style="text-align: center;height: 30px;">₹ ${
+                          item.Price * item.Quantity
+                        }</td>
+                      </tr>`;
+                   })}
+                   
+                  </table>
                   
-                      <hr/>
-                      <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">igst @9%</div>
-                      <hr/>
-                      <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">igst @9%</div>
-                      <hr/>
-                      <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">Grand Total :</div>
+                    <!-- <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">Received balance :  1</div>
+              
+                  <hr/>
+                  <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">igst @9%</div>
+                  <hr/>
+                  <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">igst @9%</div>
+                  <hr/>
+                  <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">Grand Total :</div>
 
-                      <hr/>
-                      <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">Payment Mode : Cash</div>
-                      <hr/> -->
-                      <div style="width:100%;align-self: flex-end;margin-top:0; display: flex; flex-direction: row;">
-                        <div style="width:40%" ></div>
-                          <table style="width: 70%;">
-                          <div style ="flex-direction:row">
-                          <div>
-                          <tr>
-                          <th style="text-align: start;">Igst @9% : </th>
-                          <td style="text-align: center;height: 30px;">₹ ${totalPricegst.toFixed(2)/2}</td>
-                      </tr>
+                  <hr/>
+                  <div style="align-self: flex-end;margin-right: 10px;font-style: bold;">Payment Mode : Cash</div>
+                  <hr/> -->
+                  <div style="width:100%;align-self: flex-end;margin-top:0; display: flex; flex-direction: row;">
+                    <div style="width:40%" ></div>
+                      <table style="width: 70%;">
+                      <div style ="flex-direction:row">
+                      <div>
                       <tr>
-                          <th style="text-align: start;">cgst @9% : </th>
-                          <td style="text-align: center;height: 30px;">₹ ${totalPricegst.toFixed(2)/2}</td>
-                      </tr>
-                          <tr>
-                          <th style="text-align: start;">Grand Total : </th>
-                          <td style="text-align: center;height: 20px;">₹ ${totalTaxAmount}</td>
-                      </tr>
-                      </div> 
-                      <!-- <div>
-                                <tr style="border-bottom: solid ;">
-                                    <th style="text-align: start;">Received Balance : </th>
-                                    <td style="text-align: center;height: 20px;">₹ ${'ReceivedBalance'}</td>
-                                </tr>
-                               
-                                <tr style="border-bottom: solid ;">
-                                <th style="text-align: start;">Remaining Balance : </th>
-                                <td style="text-align: center;height: 20px;">₹ ${'RemainingBalance'}</td>
+                      <th style="text-align: start;">Igst @${
+                        route.params.saleDetails.gst.slice(0, -1) / 2
+                      }% : </th>
+                      <td style="text-align: center;height: 30px;">₹ ${
+                        totalgstamount / 2
+                      }</td>
+                  </tr>
+                  <tr>
+                      <th style="text-align: start;">cgst @${
+                        route.params.saleDetails.gst.slice(0, -1) / 2
+                      }% : </th>
+                      <td style="text-align: center;height: 30px;">₹ ${
+                        totalgstamount / 2
+                      }</td>
+                  </tr>
+                      <tr>
+                      <th style="text-align: start;">Grand Total : </th>
+                      <td style="text-align: center;height: 20px;">₹ ${taxable}</td>
+                  </tr>
+                  </div> 
+                  <!-- <div>
+                            <tr style="border-bottom: solid ;">
+                                <th style="text-align: start;">Received Balance : </th>
+                                <td style="text-align: center;height: 20px;">₹ ${'ReceivedBalance'}</td>
                             </tr>
-                                <tr>
-                                    <th style="text-align: start;">Payment Method: </th>
-                                    <td style="text-align: center;height: 20px;">${'PaymentType'}</td>
-                                </tr>
-                                </div>--!>
-                                </div>
-                          </table>
-                      </div>
-                </div>
-                <hr/>
-                <hr/>
-                <div style="height:auto; padding: 20px;">
-        
-                    <p>Account Details - <br/>
-                    Bank Name: HDFC BANK, DHANGARWADI<br/>
-                    Bank Account no : 50100272967118<br/>
-                    Bank IFSC code : HDFC0004850<br/>
-                    </p>
-        
-                </div>
-                <hr/>
-                
-        <div style="height:auto ;padding:20px;flex-direction:row;display:flex;">
-        <div style="flex:.8">
-        <p>Terms & Conditions </br>
-        1. Goods once sold will not be taken back </br>
-        2. Interest @ 18% p.a will be changed if the payment</br>is not made with in the stipulated time </br>
-        3. Subject to Haryana Jurisdiction only
-        </p> 
-       
-    <!--    <div style="border-left: 2px solid grey;
-        height: 12vh;margin-top:-144px;
-        position: absolute;
-        left: 60%;"></div> --!>
-        </div>
-        <div style="height:10px">
-        Receiver's Signature :</br>
-        <hr/>
-        </div>
-
+                           
+                            <tr style="border-bottom: solid ;">
+                            <th style="text-align: start;">Remaining Balance : </th>
+                            <td style="text-align: center;height: 20px;">₹ ${'RemainingBalance'}</td>
+                        </tr>
+                            <tr>
+                                <th style="text-align: start;">Payment Method: </th>
+                                <td style="text-align: center;height: 20px;">${'PaymentType'}</td>
+                            </tr>
+                            </div>--!>
+                            </div>
+                      </table>
+                  </div>
             </div>
-          </body>
-        </html>
-        `;
+            <hr/>
+            <hr/>
+            <div style="height:auto; padding: 20px;">
+    
+                <p>Account Details - <br/>
+                Bank Name: STATE BANK OF INDIA, <br/>
+                Bank Account no : 42628391147<br/>
+                Bank IFSC code : SBIN0050251<br/>
+                </p>
+    
+            </div>
+            <hr/>
+            
+    <div style="height:auto ;padding:20px;flex-direction:row;display:flex;">
+    <div style="flex:.8">
+    <p>Terms & Conditions </br>
+    1. Goods once sold will not be taken back </br>
+    2. Interest @ 18% p.a will be changed if the payment</br>is not made with in the stipulated time </br>
+    3. Subject to Haryana Jurisdiction only
+    </p> 
+   
+<!--    <div style="border-left: 2px solid grey;
+    height: 12vh;margin-top:-144px;
+    position: absolute;
+    left: 60%;"></div> --!>
+    </div>
+    <div style="height:10px;align-items:flex-end;back">
+    Receiver's Signature :</br>
+    <hr/>
+    </div>
+
+        </div>
+      </body>
+    </html>
+    `;
 
     const style = `
-            .container {
-              margin : 15px;
-              border : solid 2px #000
-            }
-        `;
+        .container {
+          margin : 15px;
+          border : solid 2px #000
+        }
+    `;
     let options = {
       html: HtmlFormat,
       fileName: moment(new Date()).format('YYYYMMDD'),
@@ -278,24 +316,27 @@ const Pdf1 = ({navigation, route}) => {
     filePath1 = file.filePath;
     // console.log(file);
     setFilePath(file.base64);
-    //   try {
-    //     // Read the PDF file as binary data
-    //     const pdfBinaryData = await RNFS.readFile(file.filePath, 'base64');
-    // filePath1=pdfBinaryData
-    // setFilePath(filePath1)
-    //     console.log(pdfBinaryData); // This should give you the base64-encoded PDF content
-    // } catch (error) {
-    //     console.error('Error reading PDF file:', error);
-    // }
-    //  setFilePath1(file.filePath1);
-
-    //  const pdfBinaryData = await RNFS.readFile(filePath1, 'binary');
-
-    // Convert the binary data to base64
-    //  const pdfBase64 = Buffer.from(pdfBinaryData, 'binary').toString('base64')
-    //   // alert(file.filePath1);
-    //   console.log(pdfBase64)
   };
+  // const HtmlFormat = async () => {
+
+  //   //   try {
+  //   //     // Read the PDF file as binary data
+  //   //     const pdfBinaryData = await RNFS.readFile(file.filePath, 'base64');
+  //   // filePath1=pdfBinaryData
+  //   // setFilePath(filePath1)
+  //   //     console.log(pdfBinaryData); // This should give you the base64-encoded PDF content
+  //   // } catch (error) {
+  //   //     console.error('Error reading PDF file:', error);
+  //   // }
+  //   //  setFilePath1(file.filePath1);
+
+  //   //  const pdfBinaryData = await RNFS.readFile(filePath1, 'binary');
+
+  //   // Convert the binary data to base64
+  //   //  const pdfBase64 = Buffer.from(pdfBinaryData, 'binary').toString('base64')
+  //   //   // alert(file.filePath1);
+  //   //   console.log(pdfBase64)
+  // };
   const savefilePath = async () => {
     const fs = ReactNativeBlobUtil.fs;
     // const config=ReactNativeBlobUtil.config
@@ -465,6 +506,7 @@ const Pdf1 = ({navigation, route}) => {
         <Entypo
           name="print"
           size={35}
+          color={"#fff"}
           onPress={() => {
             printpdf();
           }}
@@ -472,12 +514,14 @@ const Pdf1 = ({navigation, route}) => {
         <Entypo
           name="download"
           size={35}
+          color={"#fff"}
           onPress={() => {
             downloadFile();
           }}
         />
         <Entypo
           name="share"
+          color={"#fff"}
           onPress={() => {
             shareContent();
           }}
@@ -500,7 +544,7 @@ const styles = StyleSheet.create({
   },
   UtilitiesView: {
     flexDirection: 'row',
-    backgroundColor: 'green',
+    backgroundColor: '#3a746b',
     justifyContent: 'space-between',
     paddingHorizontal: 14,
     height: Dimensions.get('window').height / 10,

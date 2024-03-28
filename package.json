@@ -36,6 +36,7 @@
     "react-native-safe-area-context": "^4.7.4",
     "react-native-screens": "^3.27.0",
     "react-native-share": "^10.0.2",
+    "react-native-sqlite-storage": "^6.0.1",
     "react-native-vector-icons": "^10.0.3",
     "rn-fetch-blob": "^0.12.0"
   },
