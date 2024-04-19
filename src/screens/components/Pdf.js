@@ -9,21 +9,15 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {decode} from 'base-64';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import RNFS from 'react-native-fs';
-import PDFView from 'react-native-pdf';
 import Pdf from 'react-native-pdf';
 import Entypo from 'react-native-vector-icons/Entypo';
-import RNFetchBlob from 'rn-fetch-blob';
 import RNPrint from 'react-native-print';
 import Share from 'react-native-share';
 import moment from 'moment';
 import FileViewer from 'react-native-file-viewer';
 import ReactNativeBlobUtil from 'react-native-blob-util';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-var ImagePath =
-  require("../../../assets/logoInvoice.jpg");
+var ImagePath = require('../../../assets/logoInvoice.jpg');
 var imagePath = 'https://ibb.co/3CVTYcR';
 var filePath1;
 var taxable;
@@ -84,16 +78,16 @@ const Pdf1 = ({navigation, route}) => {
     totalgstamount = totalPricegst.toFixed(2);
     setTotalTaxAmount(totalPricetax.toFixed(2));
     setTotalPricegst(totalPricegst.toFixed(2));
-// var fetchData= await AsyncStorage.getItem('amountData'); 
-// console.log(fetchData,"jsgfjsgf")
-//     var amountValue = {
-//       invoicenumber: invoiceNumber,
-//       invoiceTime: invoiceTime,
-//       totalamount: totalgstamount,
-//     };
-// var finalsetItem=[];
-// await finalsetItem.push(amountValue)
-//     await AsyncStorage.setItem('amountData',finalsetItem);
+    // var fetchData= await AsyncStorage.getItem('amountData');
+    // console.log(fetchData,"jsgfjsgf")
+    //     var amountValue = {
+    //       invoicenumber: invoiceNumber,
+    //       invoiceTime: invoiceTime,
+    //       totalamount: totalgstamount,
+    //     };
+    // var finalsetItem=[];
+    // await finalsetItem.push(amountValue)
+    //     await AsyncStorage.setItem('amountData',finalsetItem);
     console.log(Totalprice, 'totalll', totalPricetax);
   };
   const HtmlFormat_ = async () => {
@@ -506,7 +500,7 @@ const Pdf1 = ({navigation, route}) => {
         <Entypo
           name="print"
           size={35}
-          color={"#fff"}
+          color={'#fff'}
           onPress={() => {
             printpdf();
           }}
@@ -514,14 +508,14 @@ const Pdf1 = ({navigation, route}) => {
         <Entypo
           name="download"
           size={35}
-          color={"#fff"}
+          color={'#fff'}
           onPress={() => {
             downloadFile();
           }}
         />
         <Entypo
           name="share"
-          color={"#fff"}
+          color={'#fff'}
           onPress={() => {
             shareContent();
           }}
