@@ -13,6 +13,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Expiry from '../src/screens/components/Expiry';
+import InvoiceDetails from '../src/screens/InvoiceDetails';
 const Stack = createStackNavigator();
 
 const StackNavigation =({})=> {
@@ -36,7 +37,7 @@ const StackNavigation =({})=> {
       console.log(password,email,"emaill")
     }
     return (
-      <NavigationContainer>
+      <>
         <StatusBar/>
         <Stack.Navigator initialRouteName= {initaialRoutes} >
           {/* <Stack.Navigator initialRouteName= {password&&email?'No Internet':'LoginPage'} > */}
@@ -58,7 +59,7 @@ const StackNavigation =({})=> {
                 },
                 headerRight:()=>(
                  <View>
-                  <Text style={{color:"#fff",padding:12}}>
+                  <Text style={{color:"#fff",padding:2}}>
                     {moment(new Date()).format("DD/MM/YYYY")}
                   </Text>
                  </View>
@@ -67,26 +68,12 @@ const StackNavigation =({})=> {
                 headerTitleStyle: {
                   fontWeight: 'bold',
                 },
-                // headerTitle: (props) => <LogoTitle {...props} />,
-                // headerLeft: () => (
-                //   <Feather
-                //     onPress={() => alert('This is a button!')}
-                //     name={'arrow-left'}
-                //     size={25}
-                //     color="black"
-                //   />
-                // ),
               }}
             
             />
             <Stack.Screen name="Register" component={HomeScreen} />
             <Stack.Screen name="Login" component={Login}  options={{
-                // headerShown:false,
-                // headerStyle: {
-                //   backgroundColor: '#4c00b0',
-                //   height: 120,
-                // }
-                // headerTitleAlign:"center",
+               
                 headerTitle:"Generate Bill",
                 headerStyle: {
                   backgroundColor: '#3a746b',
@@ -111,15 +98,16 @@ const StackNavigation =({})=> {
                 //     onPress={() => alert('This is a button!')}
                 //     name={'arrow-left'}
                 //     size={25}
-                //     color="black"
+                //     color="black"1
                 //   />
                 // ),
               }}/>
             <Stack.Screen name="PDF" component={Pdf1} />
             <Stack.Screen name="LoginPage" component={StaticLogin} options={{headerShown:false}} />
             <Stack.Screen name="Expiry" component={Expiry} />
+            <Stack.Screen name="InvoiceScreen" component={InvoiceDetails} />
           </Stack.Navigator>
-          </NavigationContainer>
+          </>
         );
       }
 

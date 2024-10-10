@@ -4,7 +4,6 @@
  *
  * @format
  */
-
 import React, {useEffect, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
@@ -25,6 +24,8 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import StackNavigation from './navigation/stackNavigation';
+import { NavigationContainer } from '@react-navigation/native';
+import TabNavigator from './navigation/tabNavigation';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -52,10 +53,10 @@ function App(): JSX.Element {
   }, []);
   return (
     <>
-    
-   
-        <StackNavigation />
-      
+    <NavigationContainer>
+    <StackNavigation/>
+    </NavigationContainer>
+       
     </>
   );
 }

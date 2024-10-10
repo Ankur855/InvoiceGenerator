@@ -21,6 +21,14 @@ import {
 } from 'react-native-alert-notification';
 import RNPickerSelect from 'react-native-picker-select';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  ref,
+  onValue,
+  push,
+  update,
+  remove
+} from 'firebase/database';
+import { db } from '../../firebase-config';
 interface Props {}
 
 export const Login = ({navigation}) => {
@@ -126,14 +134,14 @@ export const Login = ({navigation}) => {
         flex: 1,
         paddingHorizontal: 8,
         height: '100%',
-        paddingBottom: 20,
+        //paddingBottom: 20,
       }}>
       <ScrollView
         style={{
           flex: 1,
           paddingHorizontal: 8,
           height: '100%',
-          paddingBottom: 20,
+          // paddingBottom: 20,
         }}>
         <TextInput
           label="Full Name"
@@ -182,19 +190,6 @@ export const Login = ({navigation}) => {
             <Text style={{color:"#fff"}}>Add Items</Text>
           </TouchableOpacity>
         </View>
-
-        {/* <TextInput
-          label="Item Name"
-          value={item}
-          onChangeText={text => setItem(text)}
-          style={styles.commonTextInputSyle}
-        /> */}
-        {/* <TextInput
-        label="Gst "
-        value={gst}
-        onChangeText={text => setGst(text)}
-        style={styles.commonTextInputSyle}
-      /> */}
         <RNPickerSelect
           style={{
             inputIOS: {
@@ -309,6 +304,15 @@ export const Login = ({navigation}) => {
               return false;
             }
             else {
+              push(ref(db, 'billDetails'), {
+                itemDetails:data,
+                name: name,
+                  email: email,
+                  mobile: mobile,
+                  gst: gst,
+                  paymentMode: paymentMode,
+                  address: address,
+              });
               navigation.navigate('PDF', {
                 itemValue: data,
                 saleDetails: {
