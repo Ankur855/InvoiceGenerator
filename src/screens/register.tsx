@@ -12,15 +12,13 @@ import moment from 'moment';
 import { Card } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CommanTiles from './components/CommanTiles';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { onValue, ref } from 'firebase/database';
 import { db } from '../../firebase-config';
-interface Item {
-
-}
+import { RootStackParamList } from '../../navigation/stackNavigation';
 const Register = () => {
   const  [data,setData]=useState([])
-  const navigation=useNavigation()
+  const navigation=useNavigation<NavigationProp<RootStackParamList>>()
   const renderData = [
     {
       id: 1,
@@ -80,7 +78,7 @@ console.log(finalData,"finalData")
   
   return (
     <View style={styles.container}>
-      <View style={{flexDirection:'row',justifyContent:'space-between',padding:8}}>
+      <View style={{flexDirection:'row',justifyContent:'space-between',paddingVertical:40,paddingHorizontal:16}}>
          <CommanTiles/>
       <CommanTiles/>
       </View>
